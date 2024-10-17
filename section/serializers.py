@@ -1,10 +1,9 @@
-from grade.serializers import GradeSerializer
 from rest_framework import serializers
 from .models import Section
 
 class SectionSerializer(serializers.ModelSerializer):
-    # school = GradeSerializer(read_only=True)  # To display school details
+    grade_name = serializers.CharField(source='grade.grade_name', read_only=True)  # Custom field
 
     class Meta:
         model = Section
-        fields = '__all__'
+        fields = ['id', 'section', 'grade', 'grade_name']  # Include both grade_name and grade if needed

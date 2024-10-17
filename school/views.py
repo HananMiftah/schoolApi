@@ -1,3 +1,5 @@
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from grade.models import Grade
 from grade.serializers import GradeSerializer
 from rest_framework import viewsets, status
@@ -61,7 +63,19 @@ class SchoolViewSet(viewsets.ModelViewSet):
             school.delete()
 
         return Response({"message": "School and related records have been deleted."}, status=status.HTTP_204_NO_CONTENT)
+    # Add a custom action to retrieve a school by email
+    @action(detail=False, methods=['get'], url_path='email=(?P<email>.+)')
+    def get_school_by_email(self, request, email=None):
+        print(f"Received email: {email}")  # Print the email for debugging
 
+        try:
+            school = School.objects.get(email=email)
+            serializer = self.get_serializer(school)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except School.DoesNotExist:
+            print("School not found")  # Debug print
+            raise Http404("School not found")
+    
     @action(detail=False, methods=['delete'], url_path='delete-all')
     def delete_all(self, request):
         # Perform bulk deletion of all school records and related users and requests
