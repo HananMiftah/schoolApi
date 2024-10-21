@@ -9,3 +9,8 @@ class Section(models.Model):
 
     def __str__(self):
         return f'{self.grade.grade_name} - {self.section}'
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['grade', 'section',], name='unique_grade_section')
+        ]
